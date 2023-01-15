@@ -1,0 +1,30 @@
+services:
+  # postgres:
+  #   image: postgres:14
+  #   restart: always
+  #   environment:
+  #     POSTGRES_PASSWORD: postgres
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready", "-d", "postgres"]
+  #     interval: 30s
+  #     timeout: 60s
+  #     retries: 5
+  #     start_period: 80s
+  vn-stock-scraper:
+    build:
+      context: .
+      dockerfile: vn_stock/Dockerfile
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - ./storage:/src/storage
+      - ./vn_stock/:/src/vn_stock
+
+  migration:
+    build:
+      context: .
+      dockerfile: migrations/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
